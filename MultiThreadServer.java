@@ -36,7 +36,7 @@ public class MultiThreadServer {
             }
         }
     }
-
+// each client handler
     private static class ClientHandler implements Runnable {
 
         private final Socket clientSocket;
@@ -46,28 +46,32 @@ public class MultiThreadServer {
         public ClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
-
+// override with the run function
         @Override
         public void run() {
+            // local variables
             File file = new File("end.txt");
             PrintWriter out = null;
             BufferedReader in = null;
             try {
+                // setting up buffers
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String line;
                 while ((line = in.readLine()) != null) {
-                    System.out.printf("Sent from the client: %s\n", line);
-                    /////////////////////////////////////// here
+                    // System.out.printf("Sent from the client: %s\n", line);
+                    // here
                     bounce= BullsCows(line,theSecret);
                     if (file.length() == 0){
                         out.println(bounce);
                     }
                     else {
+                        // plyers wins
                         if (bounce =="win"){
                             bounce = "you are the winner, the game is now finished. Congratz!";
                         }
                         else {
+                            // player lost (someone else won)
                             bounce = "Someone got the answer before you and the game" +
                                     " is now finished, better luck next time.";
                         }
@@ -79,6 +83,7 @@ public class MultiThreadServer {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                // releasing the resources
                 try {
                     if (out != null) {
                         out.close();
@@ -91,9 +96,10 @@ public class MultiThreadServer {
                 }
             }
         }
-
+        // writing to a file as a global variable
         public void EndingForAll(){
             try {
+                // write to end.txt
                 FileWriter writer = new FileWriter("end.txt");
                 writer.write("end the game");
                 writer.close();
